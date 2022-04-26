@@ -67,11 +67,11 @@ function statement(invoice, plays) {
   }
   function totalVolumeCredits(data) {
     // 반복문을 파이프라인으로 바꿈
-    /*let result = 0;
-    for (let aPerformance of data.performances) {
-      result += aPerformance.volumeCredits
-    }
-    return result*/
+    // let result = 0;
+    // for (let aPerformance of data.performances) {
+    //   result += aPerformance.volumeCredits
+    // }
+    // return result
     return data.performances.reduce((total, p)=>total + p.volumeCredits,0)
   }
 }
