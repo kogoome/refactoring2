@@ -2,25 +2,18 @@ import { join, dirname } from 'path'
 import { Low, JSONFile } from 'lowdb'
 import { fileURLToPath } from 'url'
 
-const importJson = async (_JsonFileName) => {
+async function importJson(_JsonFileName) {
   const name = _JsonFileName
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const file = join(__dirname, `${name}.json`)
+  const file = join(__dirname, `../data/${name}.json`)
   const db = new Low(new JSONFile(file))
   await db.read()
   return db
 }
 
-const invoicesFile = await importJson('invoices')
-const invoices = invoicesFile.data
-const invoice = invoices[0]
-const playsFile = await importJson('plays')
-const plays = playsFile.data
-
 function statement(invoice, plays) {
-  return renderPlainText(invoice,plays)
+  return renderPlainText(invoice, plays)
 }
-
 function renderPlainText(invoice, plays) {
   let result = `청구내역(고객명: ${invoice.customer}) \n`
   for (let aPerformance of invoice.performances) {
@@ -85,7 +78,16 @@ function renderPlainText(invoice, plays) {
   }
 }
 
+
+// 디비 가져오기
+const invoicesFile = await importJson('invoices')
+const invoices = invoicesFile.data
+const invoice = invoices[0]
+const playsFile = await importJson('plays')
+const plays = playsFile.data
+// 청구내역
 const result = statement(invoice, plays);
+// 출력
 console.log(result);
 
 

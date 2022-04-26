@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 const importJson = async (_JsonFileName) => {
   const name = _JsonFileName
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const file = join(__dirname, `${name}.json`)
+  const file = join(__dirname, `../data/${name}.json`)
   const db = new Low(new JSONFile(file))
   await db.read()
   return db
@@ -32,8 +32,8 @@ function statement(invoice, plays) {
 
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
-    let thisAmount = 0;
 
+    let thisAmount = 0;
     switch (play.type) {
       case "tragedy": // 비극
         thisAmount = 40000;
