@@ -17,8 +17,8 @@ function statement(invoice, plays) {
   statementData.customer = invoice.customer
   // play 정보가 준비된 statementData
   statementData.performances = invoice.performances.map(enrichPerformance)
-  statementData.totalAmount = totalAmount()
-  statementData.totalVolumeCredits = totalVolumeCredits()
+  statementData.totalAmount = totalAmount(statementData)
+  statementData.totalVolumeCredits = totalVolumeCredits(statementData)
   return renderPlainText(statementData, plays)
 
   // 얕은 복사, data.performance.play
@@ -62,16 +62,17 @@ function statement(invoice, plays) {
     if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
     return result
   }
-  function totalAmount() {
+
+  function totalAmount(data) {
     let result = 0;
-    for (let aPerformance of invoice.performances) {
+    for (let aPerformance of data.performances) {
       result += aPerformance.amount;
     }
     return result
   }
-  function totalVolumeCredits() {
+  function totalVolumeCredits(data) {
     let result = 0;
-    for (let aPerformance of invoice.performances) {
+    for (let aPerformance of data.performances) {
       result += aPerformance.volumeCredits
     }
     return result
@@ -85,9 +86,7 @@ function renderPlainText(data) {
   }
   result += `총액: ${usd(data.totalAmount)}\n`
   result += `적립포인트: ${data.totalVolumeCredits} 점\n`
-
   return result;
-
 
   function usd(aNumber) {
     return new Intl.NumberFormat("en-US", {
@@ -96,9 +95,7 @@ function renderPlainText(data) {
       minimumFractionDigits: 2
     }).format(aNumber / 100)// 단위 변환로직도 이동
   }
-
 }
-
 
 // 디비 가져오기
 const invoicesFile = await importJson('invoices')
