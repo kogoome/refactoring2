@@ -17,7 +17,6 @@ const invoice = invoices[0]
 const playsFile = await importJson('plays')
 const plays = playsFile.data
 
-
 // 청구서 함수
 function statement(invoice, plays) {
   let result = `청구내역(고객명: ${invoice.customer}) \n`
@@ -29,6 +28,7 @@ function statement(invoice, plays) {
   return result;
 
   // 같은 방식으로 리팩토링
+  // 난무하는 중첩함수
   function totalAmount() {
     let result = 0;
     for (let aPerformance of invoice.performances) {
@@ -36,7 +36,6 @@ function statement(invoice, plays) {
     }
     return result
   }
-
   function totalVolumeCredits() {
     let result = 0;
     for (let aPerformance of invoice.performances) {
@@ -44,7 +43,6 @@ function statement(invoice, plays) {
     }
     return result
   }
-
   function usd(aNumber) {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -52,7 +50,6 @@ function statement(invoice, plays) {
       minimumFractionDigits: 2
     }).format(aNumber / 100)// 단위 변환로직도 이동
   }
-
   function amountFor(aPerformance) {
     let result = 0;
     switch (playFor(aPerformance).type) {
@@ -74,11 +71,9 @@ function statement(invoice, plays) {
     }
     return result
   }
-
   function playFor(aPerformance) {
     return plays[aPerformance.playID]
   }
-
   function volumeCreditsFor(aPerformance) {
     let result = 0;
     result += Math.max(aPerformance.audience - 30, 0);
