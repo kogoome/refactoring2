@@ -15,13 +15,14 @@ async function importJson(_JsonFileName) {
 function statement(invoice, plays) {
   const statementData = {}
   statementData.customer = invoice.customer
-  return renderPlainText(statementData,invoice, plays)
+  statementData.performances = invoice.performances
+  return renderPlainText(statementData, plays)
 }
 
-// 데이터만 처리
-function renderPlainText(data, invoice, plays) {
+// 데이터만 처리, invoice 변수를 제거했다.
+function renderPlainText(data, plays) {
   let result = `청구내역(고객명: ${data.customer}) \n`
-  for (let aPerformance of invoice.performances) {
+  for (let aPerformance of data.performances) {
     result += ` ${playFor(aPerformance).name}: ${usd(amountFor(aPerformance))} (${aPerformance.audience}석)\n`;
   }
   result += `총액: ${usd(totalAmount())}\n`;
