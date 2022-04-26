@@ -17,6 +17,8 @@ function statement(invoice, plays) {
   statementData.customer = invoice.customer
   // play 정보가 준비된 statementData
   statementData.performances = invoice.performances.map(enrichPerformance)
+  statementData.totalAmount = totalAmount()
+  statementData.totalVolumeCredits = totalVolumeCredits()
   return renderPlainText(statementData, plays)
 
   // 얕은 복사, data.performance.play
@@ -60,6 +62,20 @@ function statement(invoice, plays) {
     if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
     return result
   }
+  function totalAmount() {
+    let result = 0;
+    for (let aPerformance of invoice.performances) {
+      result += aPerformance.amount;
+    }
+    return result
+  }
+  function totalVolumeCredits() {
+    let result = 0;
+    for (let aPerformance of invoice.performances) {
+      result += aPerformance.volumeCredits
+    }
+    return result
+  }
 }
 
 function renderPlainText(data) {
@@ -67,25 +83,12 @@ function renderPlainText(data) {
   for (let aPerformance of data.performances) {
     result += ` ${aPerformance.play.name}: ${usd(aPerformance.amount)} (${aPerformance.audience}석)\n`;
   }
-  result += `총액: ${usd(totalAmount())}\n`
-  result += `적립포인트: ${totalVolumeCredits()} 점\n`
+  result += `총액: ${usd(data.totalAmount)}\n`
+  result += `적립포인트: ${data.totalVolumeCredits} 점\n`
 
   return result;
 
-  function totalAmount() {
-    let result = 0;
-    for (let aPerformance of data.performances) {
-      result += aPerformance.amount;
-    }
-    return result
-  }
-  function totalVolumeCredits() {
-    let result = 0;
-    for (let aPerformance of data.performances) {
-      result += aPerformance.volumeCredits
-    }
-    return result
-  }
+
   function usd(aNumber) {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
