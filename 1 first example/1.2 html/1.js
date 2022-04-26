@@ -11,11 +11,16 @@ async function importJson(_JsonFileName) {
   return db
 }
 
+// 계산관련 코드
 function statement(invoice, plays) {
-  return renderPlainText(invoice, plays)
+  const statementData = {}
+  statementData.customer = invoice.customer
+  return renderPlainText(statementData,invoice, plays)
 }
-function renderPlainText(invoice, plays) {
-  let result = `청구내역(고객명: ${invoice.customer}) \n`
+
+// 데이터만 처리
+function renderPlainText(data, invoice, plays) {
+  let result = `청구내역(고객명: ${data.customer}) \n`
   for (let aPerformance of invoice.performances) {
     result += ` ${playFor(aPerformance).name}: ${usd(amountFor(aPerformance))} (${aPerformance.audience}석)\n`;
   }
