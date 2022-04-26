@@ -71,7 +71,7 @@ function statement(invoice, plays) {
     // let thisAmount = amountFor(aPerformance, play);
 
     volumeCredits += Math.max(aPerformance.audience - 30, 0);
-    // play변수 인라인 함수로 대체
+    // play변수 인라인 함수로 대체, 여러번 불러내는게 읽기 어려운것보다 좋다.
     if ("comedy" === playFor(aPerformance).type) volumeCredits += Math.floor(aPerformance.audience / 5);
     // play변수 인라인 함수로 대체, thisAmount변수 인라인 함수로 대체
     result += ` ${playFor(aPerformance).name}: ${format(amountFor(aPerformance) / 100)} (${aPerformance.audience}석)\n`;

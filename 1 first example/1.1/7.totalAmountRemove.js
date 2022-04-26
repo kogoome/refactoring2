@@ -18,20 +18,40 @@ const playsFile = await importJson('plays')
 const plays = playsFile.data
 
 
-
-
 // 청구서 함수
 function statement(invoice, plays) {
-  let totalAmount = 0;
-  let volumeCredits = 0;
   let result = `청구내역(고객명: ${invoice.customer}) \n`
+  for (let aPerformance of invoice.performances) {
+    result += ` ${playFor(aPerformance).name}: ${usd(amountFor(aPerformance))} (${aPerformance.audience}석)\n`;
+  }
+  result += `총액: ${usd(totalAmount())}\n`;
+  result += `적립포인트: ${totalVolumeCredits()} 점\n`;
+  return result;
 
-  const format = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2
-  }).format;
+  // 같은 방식으로 리팩토링
+  function totalAmount() {
+    let result = 0;
+    for (let aPerformance of invoice.performances) {
+      result += amountFor(aPerformance);
+    }
+    return result
+  }
 
+  function totalVolumeCredits() {
+    let result = 0;
+    for (let aPerformance of invoice.performances) {
+      result += volumeCreditsFor(aPerformance)
+    }
+    return result
+  }
+
+  function usd(aNumber) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2
+    }).format(aNumber / 100)// 단위 변환로직도 이동
+  }
 
   function amountFor(aPerformance) {
     let result = 0;
@@ -59,34 +79,13 @@ function statement(invoice, plays) {
     return plays[aPerformance.playID]
   }
 
-  // 볼륨크레딧 함수 작성
   function volumeCreditsFor(aPerformance) {
     let result = 0;
     result += Math.max(aPerformance.audience - 30, 0);
     if ("comedy" === playFor(aPerformance).type) result += Math.floor(aPerformance.audience / 5);
     return result
   }
-
-  for (let aPerformance of invoice.performances) {
-
-    // 비슷한 코드를 함수로 묶어 사용해보자.
-    // volumeCredits += Math.max(aPerformance.audience - 30, 0);
-    // if ("comedy" === playFor(aPerformance).type) volumeCredits += Math.floor(aPerformance.audience / 5);
-
-    // 적용
-    volumeCredits += volumeCreditsFor(aPerformance)
-
-    result += ` ${playFor(aPerformance).name}: ${format(amountFor(aPerformance) / 100)} (${aPerformance.audience}석)\n`;
-    totalAmount += amountFor(aPerformance);;
-  }
-
-  result += `총액: ${format(totalAmount / 100)}\n`;
-  result += `적립포인트: ${volumeCredits}\n`;
-  return result;
 }
-
-
-
 
 const result = statement(invoice, plays);
 console.log(result);
