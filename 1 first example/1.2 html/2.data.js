@@ -27,6 +27,7 @@ function statement(invoice, plays) {
     result.play = playFor(result)
     // 어마운트도 갖춤
     result.amount = amountFor(result)
+    result.volumeCredits = volumeCreditsFor(result)
     return result
   }
   function playFor(aPerformance) {
@@ -53,6 +54,12 @@ function statement(invoice, plays) {
     }
     return result
   }
+  function volumeCreditsFor(aPerformance) {
+    let result = 0;
+    result += Math.max(aPerformance.audience - 30, 0);
+    if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
+    return result
+  }
 }
 
 function renderPlainText(data) {
@@ -75,7 +82,7 @@ function renderPlainText(data) {
   function totalVolumeCredits() {
     let result = 0;
     for (let aPerformance of data.performances) {
-      result += volumeCreditsFor(aPerformance)
+      result += aPerformance.volumeCredits
     }
     return result
   }
@@ -86,12 +93,7 @@ function renderPlainText(data) {
       minimumFractionDigits: 2
     }).format(aNumber / 100)// 단위 변환로직도 이동
   }
-  function volumeCreditsFor(aPerformance) {
-    let result = 0;
-    result += Math.max(aPerformance.audience - 30, 0);
-    if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
-    return result
-  }
+
 }
 
 
