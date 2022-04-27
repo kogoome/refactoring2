@@ -1,3 +1,5 @@
+// 1번 파일을 가져와서 설명을 보지 않고 7번 상태를 만들것.
+
 // 로우디비사용
 import { join, dirname } from 'path'
 import { Low, JSONFile } from 'lowdb'

@@ -62,7 +62,6 @@ function statement(invoice, plays) {
     if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
     return result
   }
-
   function totalAmount(data) {
     let result = 0;
     for (let aPerformance of data.performances) {

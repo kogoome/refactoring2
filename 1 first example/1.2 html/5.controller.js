@@ -5,9 +5,9 @@ import { fileURLToPath } from 'url'
 async function importJson(_JsonFileName) {
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const file = join(__dirname, `../database/${_JsonFileName}.json`)
-  const db = new Low(new JSONFile(file))
-  await db.read()
-  return db
+  const jsonDB = new Low(new JSONFile(file))
+  await jsonDB.read()
+  return jsonDB
 }
 
 async function getJsonData (jsonFileName) {
