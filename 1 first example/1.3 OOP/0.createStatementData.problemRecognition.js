@@ -25,7 +25,7 @@ export default function createStatementData(invoice, plays) {
     각자의 구체적인 계산 로직을 정의하는것이다.
 
     이 리팩터링을 적용하려면 상속계층부터 정의해야한다.
-    즉 공연료와 적립포인트 계산 함수를 담을 클래스가 필요하다.
+    즉 공연료(amountFor)와 적립포인트 계산(volumeCreditsFor) 함수를 담을 클래스가 필요하다.
     * */
 
     function amountFor(aPerformance) {
