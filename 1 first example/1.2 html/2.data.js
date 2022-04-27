@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 async function importJson(_JsonFileName) {
   const name = _JsonFileName
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const file = join(__dirname, `../data/${name}.json`)
+  const file = join(__dirname, `../database/${name}.json`)
   const db = new Low(new JSONFile(file))
   await db.read()
   return db
@@ -21,7 +21,7 @@ function statement(invoice, plays) {
   statementData.totalVolumeCredits = totalVolumeCredits(statementData)
   return renderPlainText(statementData, plays)
 
-  // 얕은 복사, data.performance.play
+  // 얕은 복사, database.performance.play
   function enrichPerformance(aPerformance) {
     // 입력데이터를 불변으로 만들기 위한조치
     const result = Object.assign({}, aPerformance)

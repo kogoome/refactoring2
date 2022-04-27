@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 async function importJson(_JsonFileName) {
   const name = _JsonFileName
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const file = join(__dirname, `../data/${name}.json`)
+  const file = join(__dirname, `../database/${name}.json`)
   const db = new Low(new JSONFile(file))
   await db.read()
   return db
@@ -59,7 +59,7 @@ function statement(invoice, plays) {
 
   function totalAmount(data) {
     // let result = 0;
-    // for (let aPerformance of data.performances) {
+    // for (let aPerformance of database.performances) {
     //   result += aPerformance.amount;
     // }
     // return result
@@ -68,7 +68,7 @@ function statement(invoice, plays) {
   function totalVolumeCredits(data) {
     // 반복문을 파이프라인으로 바꿈
     // let result = 0;
-    // for (let aPerformance of data.performances) {
+    // for (let aPerformance of database.performances) {
     //   result += aPerformance.volumeCredits
     // }
     // return result
