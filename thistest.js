@@ -1,14 +1,4 @@
-// const test = {
-//   prop: 42,
-//   func: function() {
-//     return this.prop;
-//   },
-// };
-const test = {
-  prop: 42,
-  func: () => {
-    return this
-  },
-};
+const arr = ["1","2","3"]
 
-console.log(test.func() === global);
+const result = arr.reduce((str, a)=>str+`${a}\n`,"")
+console.log(result)
