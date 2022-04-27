@@ -81,9 +81,9 @@ function statement(invoice, plays) {
 // 출력문장
 function renderPlainText(data) {
   let result = `청구내역(고객명: ${data.customer}) \n`
-  for (let aPerformance of data.performances) {
-    result += ` ${aPerformance.play.name}: ${usd(aPerformance.amount)} (${aPerformance.audience}석)\n`;
-  }
+  result+=data.performances.reduce((str, p)=>
+    str +` ${p.play.name}: ${usd(p.amount)} (${p.audience}석)\n`,""
+  )
   result += `총액: ${usd(data.totalAmount)}\n`
   result += `적립포인트: ${data.totalVolumeCredits} 점\n`
   return result;
