@@ -158,9 +158,9 @@ class Singleton {
     Singleton.#instance = this
   }
 }
-const one  = new Singleton()
-const two  = new Singleton()
-console.log(one===two) // true
+const one = new Singleton()
+const two = new Singleton()
+console.log(one === two) // true
 ```
 - 캡슐화
 객체의 속성(데이터필드)과 메서드를 하나로 묶고 실제 구현 내용 일부를 내부에 감추어 은닉한다.
