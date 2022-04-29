@@ -1,5 +1,5 @@
 import createStatementData from "./0.createStatementData.problemRecognition.js";
-import {invoice, plays} from "./0.controller.js";
+import {invoice, plays} from "./0.api.js";
 /*
 * 초기 코드에 비해 라인 수는 배는 늘어났지만
 * 전체 로직을 구성하는 요소 각각이 더 뚜렷이 부각되고

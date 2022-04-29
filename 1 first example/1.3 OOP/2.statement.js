@@ -1,5 +1,5 @@
 import createStatementData from "./2.createStatementData.polymolphism.js";
-import {invoice, plays} from "./0.controller.js";
+import {invoice, plays} from "./0.api.js";
 
 function statement(invoice, plays) {
   return renderPlainText(createStatementData(invoice, plays))

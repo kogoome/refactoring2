@@ -1,5 +1,5 @@
 import createStatementData from "./1.createStatementData.makeClass.js";
-import {invoice, plays} from "./0.controller.js";
+import {invoice, plays} from "./0.api.js";
 
 function statement(invoice, plays) {
   return renderPlainText(createStatementData(invoice, plays))
