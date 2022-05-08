@@ -537,7 +537,7 @@ console.log(reportAutoGenerator.report(aPerson))
 를 고려해본다
 ```
 
-# 3.22 데이터 클래스
+## 3.22 데이터 클래스
 
 데이터 클래스란 데이터필드와 게터/세터로 구성된 클래스를 말한다.
 
