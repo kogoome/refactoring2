@@ -148,18 +148,18 @@ public class CarClass {
 }
 ```
 ```javascript
-class Singleton {
+class ExSingleton {
   static #instance 
   
   constructor() { // 생성자 접근 가능하지만
-    if(Singleton.#instance) return Singleton.#instance // 단일 인스턴스를 리턴
+    if(ExSingleton.#instance) return ExSingleton.#instance // 단일 인스턴스를 리턴
     this.id = 1
     this.text = "hello"
-    Singleton.#instance = this
+    ExSingleton.#instance = this
   }
 }
-const one = new Singleton()
-const two = new Singleton()
+const one = new ExSingleton()
+const two = new ExSingleton()
 console.log(one === two) // true
 ```
 - 캡슐화
@@ -167,7 +167,7 @@ console.log(one === two) // true
 접근제한자와 게터를 이용하여 단방향 전달 하는것을 말한다. 
 굳이 필드를 캡슐화 했다면 set 함수를 만들 필요가 없다.
 ```javascript
-class Capsule {
+class ExCapsule {
   #id
   name // 형식상 표기, 자바스크립트에서는 표기 안해도 무방
   constructor(name) {
@@ -180,10 +180,10 @@ class Capsule {
   getConsole() {this.#console()}
 }
 
-const one = new Capsule("hello")
-console.log(one) // Capsule { name: 'hello' }
+const one = new ExCapsule("hello")
+console.log(one) // ExCapsule { name: 'hello' }
 one.name = "world"
-console.log(one) // Capsule { name: 'world' }
+console.log(one) // ExCapsule { name: 'world' }
 console.log(one.id) // 1
 try {one.console()} // ide 밑줄
 catch (e) {console.log(e) } // TypeError: one.console is not a function
