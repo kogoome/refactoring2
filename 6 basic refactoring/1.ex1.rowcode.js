@@ -1,4 +1,4 @@
-// 유효범위를 벗어나는 변수가 없을 때
+// 리팩토링할 코드
 const printOwing = invoice => {
   let outstanding = 0
 
