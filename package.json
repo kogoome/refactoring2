@@ -12,8 +12,7 @@
   "dependencies": {
     "lowdb": "^3.0.0",
     "prettier": "^2.6.2",
-    "quokka-treasure-chest": "^1.0.2",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",
