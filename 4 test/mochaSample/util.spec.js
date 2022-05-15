@@ -48,6 +48,5 @@ describe("./4 test/mochaSample/util.js test", () => {
 //
 // at Context.<anonymous> (file:///D:/workspace3/refactoring2/4%20test/mochaSample/
 // util.spec.js:32:14)
-// at processImmediate (node:internal/ti
-// mers:464:21)
+// at processImmediate (node:internal/timers:464:21)
 
