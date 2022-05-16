@@ -18,3 +18,5 @@
 6. 예제 파일은 아래 spec.js 파일 확인
 
 7. assert 는 테스트 실패시 중단, expect 테스트 실패해도 다른 테스팅을 이어나간다고 함??
+
+8. watch 모드는 commonjs만 지원, -> jest 쓰자

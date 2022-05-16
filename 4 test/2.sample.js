@@ -14,7 +14,7 @@
 테스트 툴 : 모카 `npm i --save-dev mocha`
  */
 
-export class Province {
+export class Province { // 지역
   constructor(doc) {
     this._name = doc.name
     this._producers = []
@@ -29,7 +29,7 @@ export class Province {
     this._totalProduction += arg.production
   }
 
-  get name() {return this._name}
+  get name() {return this._name} // 접근자프로퍼티
   get producers() {return this._producers.slice();} 
   get totalProduction() {return this._totalProduction;} 
   set totalProduction(arg) {this._totalProduction = arg;} 
@@ -73,7 +73,7 @@ export function sampleProvinceData() {
   }
 }
 
-class Producer {
+class Producer { // 생산자
   constructor(aProvince, data) {
     this._province = aProvince
     this._cost = data.cost
