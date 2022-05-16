@@ -34,23 +34,15 @@ class Reading {
 		this._customer = data.customer
 		this._quantity = data.quantity
 		this._month = data.month
-		this.year = data.year
+		this._year = data.year
 	}
-	get customer() {
-		return this._customer
-	}
-	get quantity() {
-		return this._quantity
-	}
-	get month() {
-		return this._month
-	}
-	get year() {
-		return this._year
-	}
+	get customer() { return this._customer }
+	get quantity() { return this._quantity }
+	get month() { return this._month }
+	get year() { return this._year }
 }
 
-// ② 이미 만들어져 있는 calculateBaseCharge()부터 옮기자. 새 클래스를 사용하려면 데이터를 얻자마자 객체로 만들어야 한다.
+// 2. 이미 만들어져 있는 calculateBaseCharge()부터 옮기자. 새 클래스를 사용하려면 데이터를 얻자마자 객체로 만들어야 한다.
 {
 	// 클라이언트 3...
 	const rawReading = acquireReading()

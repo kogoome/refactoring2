@@ -1,3 +1,14 @@
+/*
+1. 데이터 구조 작성, 클래스는 데이터와 동작까지 묶거나, 동작없는 데이터 클래스를 다룸
+2. 테스트
+3. 함수 선언 바꾸기(6.5) 새 데이터 구조를 매개변수로 추가
+4. 테스트 
+5. 함수 호출 시 새로운 데이터 구조 인스턴스를 넘기도록 수정. 각각 테스트
+6. 기존 매개변수를 새 데이터 구조의 원소를 사용
+7. 기존 매개변수 제거 테스트
+*/
+
+
 // 온도 측정값reading 배열에서 정상 작동 범위를 벗어난 것이 있는지 검사하는 코드를 살펴보자. 온도 측정값을 표현하는 데이터는 다음과 같다.
 
 const station = {
@@ -30,7 +41,7 @@ alerts = readingsOutsideRange(
 
 class NumberRange {
 	constructor(min, max) {
-		this.data = { min: min, max: max }
+		this._data = { min: min, max: max }
 	}
 	get min() {
 		return this._data.min

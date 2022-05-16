@@ -42,6 +42,7 @@
     console.log('********************')
   }
 }
+
 { // 추출한 상태변경함수 적용
   function printOwing(invoice) {
     printBanner();
@@ -50,11 +51,11 @@
     printDetails(invoice, outstanding);
   }
   function calculateOutstanding(invoice) {
-    let outstanding = 0;
+    let result = 0;
     for (const o of invoice.orders) {
-      outstanding += o.amount
+      result += o.amount
     }
-    return outstanding
+    return result
   }
   function printDetails(invoice, outstanding) {
     console.log(`고객명: ${invoice.customer}`)

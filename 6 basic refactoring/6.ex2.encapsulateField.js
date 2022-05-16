@@ -1,32 +1,45 @@
-// * 값 캡슐화하기
+/*
+* 데이터 캡슐화 - 클래스 필드
+1. 변수 접근 갱신(get set) 캡슐화 함수 작성
+2. 정적 검사드
+3. 변수 직접 참조 -> 캡슐화 함수로 대체, 테스트
+4. 변수 접근 범위 제한. 참조때문에 제한이 안되면 이름 바꿔 테스트 참조하는곳 찾아 수정
+5. 테스트
+TODO 6. 변수 값이 레코드면 레코드 캡슐화하기(7.1) 적용 고려  
+*/
 
-// 방금 본 기본 캡슐화 기법으로 데이터 구조로의 참조를 캡슐화하면, 그 구조로의 접근이나 구조 자체를 다시 대입하는 행위는 제어할 수 있다. 하지만 필드 값을 변경하는 일은 제어할 수없다.
+{
+	let defaultOwnerData = { firstName: "마틴", lastName: "파울러" }
+	export function defaultOwner() {
+		return defaultOwnerData
+	}
+	export function defaultOwner(arg) {
+		defaultOwnerData = arg
+	}
+}
+
+// 위 방식으로 캡슐화 하면 defaultOwnerData를 직접 수정하지는 못하지만, 게터값이 원본을 참조하기 때문에
+// 게터 데이터를 수정하면 원본데이터도 변경.
 
 const owner1 = defaultOwner()
-assert.equal("파울러", Owner1.lastName, "처음 값 확인")
+assert.equal("파울러", owner1.lastName, "처음 값 확인") // 일치
 const owner2 = defaultOwner()
 owner2.lastName = "파슨스"
-assert.equal("파슨스", Owner1.lastName, "owner2를 변경한 후 ")
+assert.equal("파슨스", owner1.lastName, "owner2를 변경한 후 ") // 일치
 
-// 성공할까?
+// 게터로 참조한 데이터를 변경하면 원본값이 변경. 이를 방지하기 위해 게터가 데이터 복제본을 반환하게 수정
 
-// 기본 캡슐화 기법은 데이터 항목을 참조하는 부분만 캡슐화한다. 대부분은 이 정도로 충분하지만, 변수뿐 아니라 변수에 담긴 내용을 변경하는 행위까지 제어할 수 있게 캡슐화하고 싶을 때도 많다.
-
-// 이렇게 하는 방법은 크게 두 가지다. 가장 간단한 방법은 그 값을 바꿀 수 없게 만드는 것이다. 저자가 앞에서 set 접두어를 유지하겠다고 했지만, 실제 예시 코드들에서는 거의 사용하지 않았다.
-
-// 나는 주로 게터가 데이터의 복제본을 반환하도록 수정하는 식으로 처리한다.
-
-// defaultOwner.js...
-
-let defaultOwnerData = { firstName: "마틴", lastName: "파울러" }
-export function defaultOwner() {
-	return Object.assign({}, defaultOwnerData)
+{
+	// defaultOwner.js...
+	let defaultOwnerData = { firstName: "마틴", lastName: "파울러" }
+	function defaultOwner() {
+		return Object.assign({}, defaultOwnerData)
+	}
+	function setDefaultOwner(arg) {
+		defaultOwnerData = arg
+	}
 }
-export function setDefaultOwner(arg) {
-	defaultOwnerData = arg
-}
-
-// 특히 리스트에 이 기법을 많이 적용한다. 데이터의 복제본을 반환하면 클라이언트는 게터로 얻은 데이터를 변경할 수 있지만 원본에는 아무 영향을 주지 못한다. 단, 주의할 점이 있다. 공유데이터(원본)를 변경하기를 원하는 클라이언트가 있을 수 있다. 이럴 때 나는 문제가 될만한부분을 테스트로 찾는다. 아니면 아예 변경할 수 없게 만들 수도 있다. 이를 위한 좋은 방법이레코드 캡슐화하기 1절다.
+// 특히 리스트에 이 기법을 많이 적용한다. 데이터의 복제본을 반환하면 클라이언트는 게터로 얻은 데이터를 변경할 수 있지만 원본에는 아무 영향을 주지 못한다. 단, 주의할 점이 있다. 공유데이터(원본)를 변경하기를 원하는 클라이언트가 있을 수 있다. 이럴 때 나는 문제가 될만한부분을 테스트로 찾는다. 아니면 아예 변경할 수 없게 만들 수도 있다. 이를 위한 좋은 방법이 레코드 캡슐화하기 1절다.
 
 let defaultOwnerData = { firstName: "마틴", lastName: "파울러" }
 export function defaultOwner() {
@@ -38,8 +51,8 @@ export function setDefaultOwner(arg) {
 }
 class Person {
 	constructor(data) {
-		this.lastName = data.lastName
-		this.firstName = data.firstName
+		this._lastName = data.lastName
+		this._firstName = data.firstName
 	}
 	get lastName() {
 		return this._lastName

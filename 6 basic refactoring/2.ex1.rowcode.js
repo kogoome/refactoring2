@@ -23,7 +23,7 @@
 		return dvr.numberOfLateDeliveries > 5
 	}
 }
-{름
+{
 	function rating(aDriver) {
 		return aDriver.numberOfLateDeliveries > 5 ? 2 : 1
 	}

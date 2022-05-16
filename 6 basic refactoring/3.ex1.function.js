@@ -1,30 +1,16 @@
-// * 함수에서 변수 추출하기
+/*
+	! 함수에서 변수 추출하기
+	절차
+	1. 표현식 부작용 파악
+	2. 불변 변수 선언, 추출 표현식의 복제본 대입
+	3. 원본 표현식을 새로 만든 변수로 교체
+	4. 테스트
+	5. 표현식 사용처가 많을시 각각 교체. 교체시마다 테스트
+*/
 
 function price(order) {
-	// 가격(price). = 기본 가격 - 수량 할인 + 배송비
-	return (
-		order.quantity * order.itemPrice -
-			Math.max(0, order.quantity - 500) * order,
-		itemPrice * 0.05 + Math.min(order.quantity * order.itemPrice * 0.1, 100)
-	)
-}
-
-// 간단한 코드지만 더 쉽게 만들 수 있다. 먼저 기본 가격은 상품 가격 (itemPrice)에 수량(quantity)을 곱한 값임을 파악해내야 한다.
-
-function price(order) {
-	// 가격(price) - 기본 가격 - 수량 할인 + 배송비
-	return (
-		order.quantity * order.itemPrice -
-		Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-		Math.min(order.quantity * order.itemPrice * 0.1, 100)
-	)
-}
-
-// 절차(2)가 이 로직을 이해했다면 기본 가격을 담을 변수를 만들고 적절한 이름을 지어준다.
-
-function price(order) {
-	// 가격(price) = 기본 가격 - 수량 할인 + 배송비
-	const basePrice = order.quantity * order.itemPrice
+	// * 1. 부작용파악 : 로직의 구조가 직관적이지 않음
+	// 구조 : 가격(price) = 기본가격 - 수량할인 + 배송비
 	return (
 		order.quantity * order.itemPrice -
 		Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
@@ -32,46 +18,43 @@ function price(order) {
 	)
 }
 
-// 물론 이렇게 변수 하나를 선언하고 초기화한다고 해서 달라지는 건 없다. 절차(3) 이 변수를 실제로사용해야 하므로 원래 표현식에서 새로 만든 변수에 해당하는 부분을 교체한다.
-
 function price(order) {
-	// 가격(price) = 기본 가격 - 수량 할인 + 배송비
-	const basePrice = order.quantity * order.itemPrice
+	// 구조 : 가격(price) = 기본가격 - 수량할인 + 배송비
+	// * 2. 로직의 구조에 맞는 변수명을 작성
+	const basePrice = order.quantity * order.itemPrice // * 기본가격
 	return (
-		basePrice -
-		Math.max(0, order, quantity - 500) * order.itemPrice * 0.05 +
+		order.quantity * order.itemPrice -
+		Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
 		Math.min(order.quantity * order.itemPrice * 0.1, 100)
 	)
 }
 
-// 방금 교체한 표현식이 쓰이는 부분이 더 있다면 마찬가지로 새 변수를 사용하도록 수정한다.
-
 function price(order) {
 	// 가격(price) = 기본 가격 - 수량 할인 + 배송비
 	const basePrice = order.quantity * order.itemPrice
 	return (
-		basePrice -
+		basePrice - // * 3. 원본 표현식을 새로 만든 변수로 교체
 		Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
 		Math.min(basePrice * 0.1, 100)
+		// * 5. 다른곳에 있는 같은로직에도 변수 적용
 	)
 }
-
-// 절차(5) 그다음 줄은 수량 할인이다. 수량 할인도 다음과 같이 추출하고 교체한다.
 
 function price(order) {
 	// 가격(price) = 기본 가격 - 수량 할인 + 배송비
 	const basePrice = order.quantity * order.itemPrice
-	const quantityDiscount =
-		Math.max(0, order.quantity - 500) * order.itemPrice * 0.05
-	return basePrice - quantityDiscount + Math.min(basePrice * 0.1, 100)
+	// * 수량할인 변수 생성
+	const quantityDiscount = Math.max(0, order.quantity - 500) * order.itemPrice * 0.05
+	return basePrice - quantityDiscount + Math.min(basePrice * 0.1, 100) 
+	// * 수량할인 변수 적용
 }
-
-// 마지막으로 배송비도 똑같이 처리한다. 다 수정했다면 주석은 지워도 된다. 주석에서 한 말이 코드에 그대로 드러나기 때문이다.
 
 function price(order) {
 	const basePrice = order.quantity * order.itemPrice
 	const quantityDiscount =
 		Math.max(0, order.quantity - 500) * order.itemPrice * 0.5
+	// * 배송비 변수 생성
 	const shipping = Math.min(basePrice * 0.1, 100)
-	return basePrice - quantityDiscount + shipping
+	return basePrice - quantityDiscount + shipping // * 배송비 변수 적용
+	// * 구조 반영 : 가격(price) = 기본 가격 - 수량 할인 + 배송비
 }

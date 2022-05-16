@@ -13,7 +13,7 @@ function setTitle(arg) { tpHd = arg } // tphd 변수의 세터
 
 let title = "untitled"
 function title() {
-	return _title
+	return title
 }
 function setTitle(arg) {
 	title = arg
