@@ -1,0 +1,421 @@
+##예시
+
+
+
+# 7.4 임시 변수를 질의 함수로 바꾸기Replace Temp with Query
+
+
+const basePrice = this._quantity * this. _itemPrice;; if (basePrice > 1000)
+
+return basePrice * 0.95; else
+
+return basePrice * 0.98;
+
+get basePrice() {this._quantity * this._itemPrice;}
+
+if (this.basePrice > 1000)
+
+return this.basePrice * 0.95; else
+
+return this.basePrice * 0.98;
+
+## 배경
+
+함수 안에서 어떤 코드의 결팟값을 뒤에서 다시 참조할 목적으로 임시 변수를 쓰기도 한다. 임시 변수를 사용하면 값을 계산하는 코드가 반복되는 걸 줄이고 (변수 이름을 통해) 값의 의미를 설명할 수도 있어서 유용하다. 그런데 한 걸음 더 나아가 아예 함수로 만들어 사용하는 편이나을 때가 많다.
+
+긴 함수의 한 부분을 별도 함수로 추출하고자 할 때 먼저 변수들을 각각의 함수로 만들면 일이수월해진다. 추출한 함수에 변수를 따로 전달할 필요가 없어지기 때문이다. 또한 이 덕분에 추출한 함수와 원래 함수의 경계가 더 분명해지기도 하는데, 그러면 부사연스러운 의존 관계나부수효과를 찾고 제거하는 데 도움이 된다.
+
+변수 대신 함수로 만들어두면 비슷한 계산을 수행하는 다른 함수에서도 사용할 수 있어 코드중복이 줄어든다. 그래서 나는 여러 곳에서 똑같은 방식으로 계산되는 변수를 발견할 때마다함수로 바꿀 수 있는지 살펴본다.
+
+이번 리팩터링은 클래스 안에서 적용할 때 효과가 가장 크다. 클래스는 추출할 메서드들에 공유 컨텍스트를 제공하기 때문이다. 클래스 바깥의 최상위 함수로 추출하면 매개변수가 너무 많아져서 함수를 사용하는 장점이 줄어든다. 중첩 함수를 사용하면 이런 문제는 없지만 관련 함수들과 로직을 널리 공유하는 데 한계가 있다.
+
+임시 변수를 질의 함수로 바꾼다고 다 좋아지는 건 아니다. 자고로 변수는 값을 한 번만 계산하고, 그 뒤로는 읽기만 해야 한다. 가장 단순한 예로, 변수에 값을 한 번 대입한 뒤 더 복잡한 코드 덩어리에서 여러 차례 다시 대입하는 경우는 모두 질의 함수로 추출해야 한다. 또한 이 계산로직은 변수가 다음번에 사용될 때 수행해도 똑같은 결과를 내야 한다. 그래서 옛날 주소 처럼스냅숏 용도로 쓰이는 변수에는 이 리팩터링을 적용하면 안 된다.
+
+
+
+## 절차
+
+1. 변수가 사용되기 전에 값이 확실히 결정되는지, 변수를 사용할 때마다 계산 로직이 매번 다른 결과를내지는 않는지 확인한다.
+
+2. 읽기전용으로 만들 수 있는 변수는 읽기전용으로 만든다.
+
+3. 테스트한다.
+
+4. 변수 대입문을 함수로 추출한다.
+
+- 변수와 함수가 같은 이름을 가질 수 없다면 함수 이름을 임시로 짓는다. 또한 추출한 함수가 부수효과를 일으키지는 않는지 획인한다. 부수효과가 있다면 질의 함수와 변경 함수 분리하기 로대처한다.
+
+5. 테스트한다.
+
+6 변수 인라인하기 64절로 임시 변수를 제거한다.
+
+## 예시
+
+간단한 주문kr 클래스를 준비했다.
+
+- Order 클래스... constructor (quantity, item) { this. quantity = quantity; this, item = item;
+
+get price() { var basePrice = this._quantity * this._item.price; var discountFactor = 0.98; if (basePrice > 1000) discountFactor -= 0.03 return basePrice * discountFactor; }
+
+여기서 임시 면수인 basePrice와 discountFactor를 메서드로 바꿔보자.
+
+2. 먼저 basePrice에 const를 붙여 읽기전용으로 만들고 3. 테스트해본다. 이렇게 하면 못 보고 지나친 재대입 코드를 찾을 수 있다(컴파일 에러가 난다). 지금처럼 코드가 간단할 때는 그럴 일이 없겠지만, 코드가 길면 흔히 벌어지는 일이다.
+
+- Order 클래스... constructor(quantity, item) { this. quantity = quantity; this.item = item; ) get price() { const basePrice = this._quantity * this._item.price; var discountFactor = 0.98; if (basePrice > 1000) discountFactor == 0.03; return base Price + discountFactor; }
+
+4. 그런 다음 대입문의 우변을 게터로 추출한다.
+
+- Order 클래스... get price() { const basePrice = this.basePrice; var discountFactor = 0.98; if (basePrice > 1000) discountFactor -= 0.03; return basePrice * discountFactor; 1
+
+get basePrice() { return this._quantity * this._item.price; }
+
+5. 테스트한 다음 6. 변수를 인라인 한다.
+
+- Order 클래스... get price() { const basePrice = this.basePrice var discountFactor = 0.98; if (this.basePrice > 1000) discountFactor -= 0.03; return this.basePrice * discountFactor; }
+
+discountFactor 변수도 같은 순서로 처리한다. 4. 먼저 함수 추출하기 진다.
+
+- Order 클래스...
+
+get price() {
+
+const discountFactor = this.discountFactor; return this.basePrice * discountFactors
+
+get discountFactor() {
+
+var discountFactor = 0.98; if (this.basePrice > 1000) discountFactor == 0.03;
+
+return discountFactor; }
+
+이번에는 discountFactor에 값을 대입하는 문장이 둘인데, 모두 추출한 함수에 넣어야 한다.2. 원본 변수는 마찬가지로 const로 만든다.
+
+6. 마지막으로 변수 인리인 차례다.
+
+--- Order 클라스... get price() { return this.basePrice * this.discountFactor: }
+
+
+
+
+# 7.5 클래스 추출하기
+
+Extract Class
+
+· 반대 리팩터링: 클래스 인라인하기 7,8
+
+class Person { get officeAreaCode() {return this._officeAreaCode; } get officeNumber() {return this._officeNumber; } }
+
+class Person {
+
+get officeAreaCode() {return this._telephoneNumber.areaCode;}
+
+get officeNumber() {return this._telephone Number.number;} }
+
+class Telephone Number { get areaCode() {return this._areacode; } get numbero {return this._number;} }
+
+## 배경
+
+클래스는 반드시 명확하게 추상화하고 소수의 주어진 역할만 처리해야 한다는 가이드라인을 들어봤을 것이다. 하지만 실무에서는 몇 가지 연산을 추가하고 데이터도 보강하면서 클래스가 점점 비대해지곤 한다. 기존 클래스를 굳이 쪼갤 필요까지는 없다고 생각하여 새로운 역할을 덧씌우기 쉬운데, 역할이 갈수록 많아지고 새끼를 치면서 클래스가 굉장히 복잡해진다. 그러다. 보면 어느새 전자레인지로 바짝 익힌 음식처럼 딱딱해지고 만다.
+
+메서드와 데이터가 너무 많은 클래스는 이해하기가 쉽지 않으니 잘 살펴보고 적절히 분리하는 것이 좋다. 특히 일부 데이터와 메서드를 따로 묶을 수 있다면 어서 분리하라는 신호다. 함께 변경되는 일이 많거나 서로 의존하는 데이터들도 분리한다. 특정 데이터나 메서드 일부를 제거하면 어떤 일이 일어나는지 사문해보면 판단에 도움이 된다. 제거해도 다른 필드나 메서드 들
+
+
+이 논리적으로 문제가 없다면 분리할 수 있다는 뜻이다.
+
+개발 후반으로 접어들면 서브클래스가 만들어지는 방식에서 왕왕 징후가 나타나기도 한다. 예컨대 작은 일부의 기능만을 위해 서브클래스를 만들거나, 확장해야 할 기능이 무엇이냐에 따라서브클래스를 만드는 방식도 달라진다면 클래스를 나눠야 한다는 신호다.
+
+## 절차
+
+0 클래스의 역할을 분리할 방법을 정한다.
+
+2. 분리될 역할을 담당할 클래스를 새로 만든다.
+
+- 원래 클래스에 남은 역할과 클래스 이름이 어울리지 않는다면 적절히 바꾼다. 3. 원래 클래스의 생성자에서 새로운 클래스의 인스턴스를 생성하여 필드에 저장해둔다. 4. 분리될 역할에 필요한 필드들을 새 클래스로 옮긴다(필드 옮기기5.2), 하나씩 옮길 때마다 테스트한다. 5. 메서드들도 새 클래스로 옮긴다(함수 옮기기3.1절). 이때 저수준 메서드, 즉 다른 메서드를 호출하기보
+
+다는 호출을 당하는 일이 많은 메서드부터 옮긴다. 하나씩 옮길 때마다 테스트한다.
+
+6 양쪽 클래스의 인터페이스를 살펴보면서 불필요한 메서드를 제거하고, 이름도 새로운 환경에 맞게 바꾼다. 1. 새 클래스를 외부로 노출할지 정한다. 노출하려거든 새 클래스에 참조를 값으로 바꾸기를 적용할지 고민해본다.
+
+## 예시
+
+단순한 Person 클래스를 예로 준비했다.
+
+Person 클래스... get name() {return this._name;} set name (arg) {this.name = arg;} get telephone Number() {return (${this.officeAreaCode}) ${this.officeNumber}';} get officeAreaCode) {return this._officeAreaCode;} set officeAreaCode(arg) {this._officeAreaCode = arg; } get officeNumber() {return this._officeNumber;} set officeNumber(arg) {this. officeNumber = arg;}
+
+1. 여기서 전화번호 관련 동작을 별도 클래스로 뽑아보자. 2. 먼저 빈 전화번호를 표현하는 TelephoneNumber 클래스를 성의한다.
+
+-- class TelephoneNumber {
+
+}
+
+
+간단하다. 3 다음으로 Person 클래스의 인스턴스를 생성할 때 전화번호 인스턴스도 함께 생성해 지장해둔다.
+
+- Person 클래스.... constructor() { this._telephone Number = new Telephone Number(); }
+
+- TelephoneNumber 클래스.... get officeAreaCode() {return this._officeAreaCode;} set officeArea Code(arg) {this._officeAreaCode = arg;}
+
+4. 그런 다음 필드들을 하나씩 새 클래스로 옮긴다. 2절
+
+- Person 클래스... get officeAreaCode) {return this._telephoneNumber.officeAreaCode; } set officeAreaCode (arg) {this._telephoneNumber.officeAreaCode = arg;}
+
+테스트해서 문제없으면 다음 필드로 넘어간다.
+
+TelephoneNumber ... get officeNumber() {return this._officeNumber;} set officeNumber(arg) {this._officeNumber = arg;} - Person 클래스.... get officeNumber() {return this._telephoneNumber.officeNumber;} set officeNumber (arg) {this._telephone Number.officeNumber = arg;}
+
+다시 테스트해보고, 5. 이어서 telephoneNumber() 메서드를 옮긴다.
+
+- TelephoneNumber 클래스.....
+
+get telephoneNumber() {return (${this.officeAreaCode}) ${this.officeNumber}";}
+
+- Person 클래스.... get telephone Number() {return this._telephone Number, telephoneNumber;}
+
+6. 이제 정리할 차례다. 새로 만든 클래스는 순수한 전화번호를 뜻하므로 사무실 이란 단어를 쓸 이유가 없다. 마찬가지로 전화번호라는 뜻도 메서드 이름에서 다시 강조할 이유가 없다.
+
+그러니 메서드들의 이름을 적절히 바꿔주자 (함수 선언 바꾸기 1.5).
+
+TelephoneNumber 클래스... get areaCode() {return this._areaCode; } set areaCode(arg) {this._areaCode = arg;} get number() {return this._number;} set number(arg) {this._number = arg;} - Person 클래스.... get officeAreaCode() {return this._telephone Number areaCode;} set officeAreaCode (arg) {this._telephoneNumber.areaCode = arg;} get officeNumber() {return this._telephoneNumber.number;}
+
+set officeNumber(arg) {this.telephoneNumber.number = arg;}
+
+마지막으로 전화번호를 사람이 읽기 좋은 포맷으로 출력하는 역할도
+
+TelephoneNumber 클래스.... toString() {return (${this.areaCode)) ${this.number}';} - Person 클래스.... get telephoneNumber() {return this._telephoneNumber.toString();
+
+전화번호 클래스에 맡긴다.
+
+1. 전화번호는 여러모로 쓸모가 많으니 이 클래스는 클라이언트에게 공개하는 것이 좋겠다. 그러면 "office"로 시작하는 메서드들을 없애고 TelephoneNumber의 접근자를 바로 사용하도록바꿀 수 있다. 그런데 기왕 이렇게 쓸 거라면 전화번호를 값 객체로 만드는 게 나으니 참조를값으로 바꾸기’-4절부터 적용한다(자세한 방법은 9.4절의 예시에서 소개한다).
+
+}
+
+
+# 7.6 클래스 인라인하기 Inline Class
+
+- 반대 리팩터링: 클래스 추출하기.
+
+class Person {
+
+get officeAreaCode() {return this._telephone Number.areaCode;}
+
+get officeNumber() {return this._telephoneNumber. number;} } class TelephoneNumber {
+
+get areaCode() {return this._areaCode;} get number() {return this._number;}
+
+class Person {
+
+get officeAreaCode() {return this. officeAreaCode;} get officeNumber() {return this._officeNumber;}
+
+## 배경
+
+클래스 인라인하기는 클래스 추출하기 -5를 거꾸로 돌리는 리팩터링이다. 나는 더 이상 제 역할을 못 해서 그대로 두면 안 되는 클래스는 인라인 해버린다. 역할을 옮기는 리팩터링을 하고 나니 특정 클래스에 남은 역할이 거의 없을 때 이런 현상이 자주 생긴다. 이럴 땐 이 불쌍한 클래스를 가장 많이 사용하는 클래스로 흡수시기자.
+
+두 클래스의 기능을 지금과 다르게 배분하고 싶을 때도 클래스를 인라인한다. 클래스를 인라인해서 하나로 합친 다음 새로운 클래스를 추출 5정하는 게 쉬울 수도 있기 때문이다. 이는 코드를 재구성할 때 흔히 사용하는 방식이기도 하다. 상황에 따라 한 컨텍스트의 요소들을 다른 쪽으로 하나씩 옮기는 게 쉬울 수도 있고, 인라인 리팩터링으로 하나로 합친 후 추출하기 리팩터링으로 다시 분리하는 게 쉬울 수도 있다.
+
+
+
+## 절차
+
+1. 소스 클래스의 각 public 메서드에 대응하는 메서드들을 타깃 클래스에 생성한다. 이 메서드들은 단순히 작업을 소스 클래스로 위임해야 한다.
+
+2. 소스 클래스의 메서드를 사용하는 코드를 모두 타깃 클래스의 위임 메서드를 사용하도록 바꾼다. 하나씩 바꿀 때마다 테스트한다.
+
+3. 소스 클래스의 메서드와 필드를 모두 타깃 클래스로 옮긴다. 하나씩 옮길 때마다 테스트한다.
+4. 소스 클래스를 삭제하고 조의를 표한다.
+
+## 예시
+
+배송 추적 정보를 표현하는 TrackingInformation 클래스를 준비했다.
+
+-- class TrackingInformation { get shipping Company {return this. _shippingCompany;} // 배송 회사 set shippingCompany(arg) {this._shippingCompany = arg;} get trackingNumber() {return this. _trackingNumber;} // 추적 번호 set trackingNumber (arg) {this._trackingNumber = arg;} get display() { return ${this.shippingCompany}: ${this.trackingNumber}'; } }
+
+이 클래스는 배송, anxn 클래스의 일부처럼 사용된다.
+
+Shipment 클래스... get trackingInfo() { return this._trackingInformation display: } get tracking Information() {return this._tracking Information;} set trackingInformation(aTrackingInformation) { this._tracking Information - aTracking Information; }
+
+TrackingInformation이 예전에는 유용했을지 몰라도 현재는 제 역할을 못 하고 있으니, Shipment 클래스로 인라인하려 한다.
+
+먼저 TrackingInformation의 메서드를 호출하는 코드를 찾는다.
+
+- 클라이언트... aShipment.trackingInformation.shipping Company = request.vendor;
+
+0 이처럼 외부에서 직접 호출하는 TrackingInformation의 메서드들을 모조리 Shipment로옮긴다. 그런데 보통 때의 함수 옮기기 정와는 약간 다르게 진행해보자. 먼저 Shipment에 위임 함수를 만들고 2. 클라이언트가 이를 호출하도록 수정하는 것이다.
+
+Shipment 클래스... set shipping Company(arg) {this._tracking Information.shipping Company = arg;} - 클라이언트... aShipment.tracking Information.shipping Company = request.vendor;
+
+클라이언트에서 사용하는 TrackingInformation의 모든 요소를 이런 식으로 처리한다. 3. 다고쳤다면 TrackingInformation의 모든 요소를 Shipment 로 옮긴다.
+
+먼저 display() 메서드를 인라인' 2한다.
+
+- Shipment 클래스..... get trackingInfo() { return ${this.shippingCompany}: ${this.trackingNumber}'; }
+
+다음은 배송 회사 필드 차례다.
+
+- Shipment 클래스.... get shipping Company) {return this._tracking Information._shipping Company;} set shipping Company(arg) {this._tracking Informations_shipping Company = arg;}
+
+여기서는 이동할 목적지인 Shipment에서 shippingCompany()만 참조하므로 필드 옮기기5. 2의 절차를 모두 수행하지 않아도 된다. 그래서 타깃을 참조하는 링크를 소스에 추가하는 단계생략한다.
+
+이 과정을 반복하고, 4. 다 옮겼다면 TrackingInformation 클래스를 삭제한다.
+
+Shipment 클래스... get trackingInfo() { return '${this.shipping Company}: ${this.trackingNumber} ;
+
+
+get shipping Company {return this._shipping Company;} set shipping Company(arg) {this._shipping Company = arg;} get trackingNumber() {return this._trackingNumber; } set tracking Number (arg) {this._trackingNumber = arg;}
+
+Inline Class 76 324 012191871
+
+
+
+# 7.7 위임 숨기기Hide Delegate
+
+- 반대 리팩터링: 중개자 제거하기 7.8점
+
+manager = aPerson.department.manager;
+
+manager = aPerson.manager;
+
+class Person {
+
+get manager() {return this.department.manager;}
+
+## 배경
+
+모듈화 설계를 제대로 하는 핵심은 캡슐화다. 어쩌면 가장 중요한 요소일 수도 있다. 캡슐화는모듈들이 시스템의 다른 부분에 대해 알아야 할 내용을 줄여준다. 캡슐화가 잘 되어 있다면 무언가를 변경해야 할 때 함께 고려해야 할 모듈 수가 적어져서 코드를 변경하기가 훨씬 쉬워진다.
+
+객체 지향을 처음 배울 때는 캡슐화란 필드를 숨기는 것이라고 배운다. 그러다 경힘이 쌓이면서 캡슐화의 역할이 그보다 많다는 사실을 깨닫는다.
+
+예컨대 서버 객체의 필드가 가리기는 객체(위임 객체delegate object ) 의 메서드를 호출하려면 클라이언트는 이 위임 객체를 알이야 한다. 위임 객체의 인터페이스가 바뀌면 이 인터페이스를 사용하는 모든 클라이언트가 코드를 수정해야 한다. 이러한 의존성을 없애려면 서버 자체에 위임 메서드를 만들어서 위임 객체의 존재를 숨기면 된다. 그러면 위임 객체가 수정되더라도 서버 코드만 고치면 되며, 클라이언트는 아무런 영향을 받지 않는다.
+
+
+Server Delegate Client a Method aMethod delegate.aMethod()
+
+## 절차
+
+1. 위임 객체의 각 메서드에 해당하는 위임 메서드를 서버에 생성한다. 
+2. 클라이언트가 위임 객체 대신 서버를 호출하도록 수정한다. 하나씩 바꿀 때마다 테스트한다.
+3 모두 수정했다면, 서버로부터 위임 객체를 얻는 접근자를 제거한다.
+4. 테스트한다.
+
+예시 사람과 사람이 속한 부서department 를 다음처럼 정의했다.
+
+- Person 클래스... constructor(name) { this._name = name; } get name() {return this._name;} get department) {return this._department;} set department (arg) {this._department = arg;} - Department 클래스.... get chargeCode() {return this._chargeCode; } set chargeCode(arg) {this, _chargeCode = arg; } get manager() {return this._manager;} set manager(arg) {this._manager = arg; }
+
+클라이언트에서 어떤 사람이 속한 부서의 관리자를 알고 싶다고 하자. 그러기 위해서는 부서 객체부터 얻어와야 한다.
+
+
+-- 클라이언트.... manager = aPerson, department.manager;
+
+보다시피 클라이언트는 부서 클래스의 작동 방식, 다시 말해 부서 클래스가 관리자 정보를 제공한다는 사실을 알아야 한다. | 이러한 의존성을 줄이려면 클라이언트가 부서 클래스를 볼 수 없게 숨기고, 대신 사람 클래스에 간단한 위임 메서드를 만들면 된다.
+
+Person 클래스... get manager() {return this._department.manager;}
+
+2. 이제 모든 클라이언트가 이 메서드를 사용하도록 고친다.
+
+클라이언트... manager = aPerson.department.manager;
+
+3. 클라이언트 코드를 다 고쳤다면 사람 클래스의 department() 접근자를 삭제한다.
+
+
+
+
+# 7.8 중개자 제거하기Remove Middle Man
+
+- 반대 리팩터링: 위임 숨기기 17절
+
+manager = aPerson.manager;
+
+class Person {
+
+get manager() {return this.department.manager;}
+
+manager e aPerson.department.manager;
+
+## 배경
+
+위임 숨기기 전의 '배경' 절에서 위임 객체를 캡슐화하는 이점을 설명했다. 하지만 그 이점이거저 주어지는 건 아니다. 클라이언트가 위임 객제의 또 다른 기능을 사용하고 싶을 때마다 서버에 위임 메서드를 추가해야 하는데, 이렇게 기능을 추기하다 보면 단순히 전달만 하는 위임메서드들이 점점 성가셔진다. 그러면 서버 클래스는 그저 중개자 middleman* 역할로 전락하여, 차라리 클라이언트가 위임 객제를 직접 호출하는 게 나을 수 있다.
+
+이 냄새는 데메테르 법칙 너무 신봉할 때 자주 나타난다. 나는 이 법칙을 이따금 유용한 데메테르의 제안' 정도로 부르는 게 훨씬 낫다고 생각한다.
+
+https://memberservices.informit.com/my account/webedition/9780135425664/html/smells.html#middle-man* 옮긴이 영어식 발음을 써서 '디미터의 법칙'이라고도 하며, 그 다른 이름은 '최소 지식 원칙(principle of least knowledge)'이다. 내부 정보를 가능한 한 숨기고 밀접한 모듈과만 상호작용하여 결합도를 낮추자는 원칙으로, 자칫하면 이 과정에서 위임 혹은래퍼(wrapper) 매서드가 너무 늘어나는 등의 부작용이 있을 수 있으니 상황에 맞게 응용하는 게 좋다.
+
+
+어느 정도까지 숨겨야 적절한지를 판단하기란 쉽지 않지만, 우리에게는 다행히 위임 숨기기와 중개사 제기하기 리팩터링이 있으니 크게 문제되지는 않는다. 필요하면 언제든 균형점을 옮길 수 있으니 말이다. 시스템이 바뀌면 적절하다'의 기준도 바뀌기 마련이다. 6개월 전에는 바람직했던 캡슐화가 이제는 어색할 수 있다. 리팩터링은 결코 미안하다고 말하지 않는다. 즉시 고칠 뿐이다.
+
+## 절차
+
+1. 위임 객체를 얻는 게터를 만든다. 
+2. 위임 메서드를 호출하는 클라이언트가 모두 이 게터를 거치도록 수정한다. 하나씩 바꿀 때마다 테스트한다. 
+3. 모두 수정했다면 위임 메서드를 삭제한다. 
+- 자동 리팩터링 도구를 사용할 때는 위임 필드를 캡슐화 한 다음, 이를 사용하는 모든 메서드를 인라인 한다.
+
+## 예시
+
+자신이 속한 부서 : Department 객체를 통해 관리자manager를 찾는 사람 Person 클래스를 살펴보자 ( 이 책을 차례대로 읽고 있다면 굉장히 친숙한 예일 것이다).
+
+---- 클라이언트... manager = aPerson.manager; ==== Person 클래스... get manager() {return this._department.manager; } - Department 클라스.... get manager() {return this._manager;}
+
+사용하기 쉽고 부서는 캡슐화되어 있다. 하지만 이런 위임 메서드가 많아지면 사람 클래스의 상당 부분이 그저 위임하는 데만 쓰일 것이다. 그럴 때는 중개자를 제거하는 편이 낫다. 1. 먼저 위임 객체 (부서)를 얻는 게터를 만들자.
+
+- Person 클래스...
+
+get department ()
+
+{return this. department;}
+
++ 옮긴이 소설 (러브스토리)와 이를 영화화한 동명의 영화에 나온 대사 'Love means never having to say you're sorry'를 때 러디한 문장이다.
+
+2. 이제 각 클라이언트가 부시 객체를 직접 사용하도록 고친다.
+- 클라이언트.... manager = aPerson.department.manager;
+3. 클라이언트를 모두 고쳤다면 Person의 manager() 메서드를 삭제한다. Person에 단순한 위임 메서드가 더는 남지 않을 때까지 이 작업을 반복한다.
+
+위임 숨기기 나 중개자 제거하기를 적당히 섞어도 된다. 자주 쓰는 위임은 그대로 두는 편이 클라이언트 입장에서 편하다. 둘 중 하나를 반드시 해야 한다는 법은 없다. 상황에 맞게 처리하면 되고, 합리적인 사람이라면 어떻게 해야 가장 효과적인지 판단할 수 있을 것이다.
+
+
+자동 리팩터링을 사용한다면
+
+자동 리팩터링을 사용한다면 다른 방식도 생각해볼 수 있다. 먼저 부서 필드를 캡슐화한다. 그리면 관리자 게터에서 부서의 public 게터를 사용할 수 있다. - Persor 클래스....
+
+get manager() {return this.department.manager; }
+
+
+
+78 중개자제거야.
+
+자바스크립트에서는 이 변화가 잘 드러나지 않지만, department 앞의 밑줄(_)을 빼면, 더 이상 필드를 직접 접근하지 않고 새로 만든 게터를 사용한다는 뜻이다. 그런 다음 manager() 메서드를 인라인' 일하여 모든 호출자를 한 번에 교체한다.
+
+Middle Man
+
+
+# 7.9 알고리좀 교체하기 Substitute Algorithm
+
+f 0 {
+
+}
+
+function foundPerson (people) { for(let i = 0; i < people.length; i++) { if (people[i] = "Don") { return "Don"; } if (people[i] = "John") { return "John", } if (people[i] = "Kent") { return "Kent"; } } return ""; }
+
+function foundPerson (people) { const candidates = ["Don", "John", "Kent"]; return people.find(p => candidates.includes(p)) || ''; }
+
+## 배경
+
+어떤 목적을 달성하는 방법은 여러 가지가 있게 마련이다. 그중에서도 다른 것보다 더 쉬운 방법이 분명히 존재한다. 알고리즘도 마찬가지다. 나는 더 간명한 방법을 찾아내면 복잡한 기존 코드를 간명한 방식으로 고친다. 리팩터링하면 복잡한 대상을 단순한 단위로 나눌 수 있지만, 때로는 알고리즘 전체를 걷어내고 훨씬 간결한 알고리즘으로 바꿔야 할 때가 있다. 문제를 더 확실히 이해하고 훨씬 쉽게 해결하는 방법을 발견했을 때 이렇게 한다. 내 코드와 똑같은 기능을 제공하는 라이브러리를 찾았을 때도 마찬가지다.
+
+알고리즘을 살짝 다르게 동작하도록 바꾸고 싶을 때도 이 변화를 더 쉽게 가할 수 있는 알고리즘으로 통째로 바꾼 후에 처리하면 편할 수 있다.
+
+이 작업에 착수하려면 반드시 메서드를 가능한 한 잘게 나눴는지 확인해야 한다. 거대하고 복잡한 알고리즘을 교체하기란 상당히 어려우니 알고리즘을 간소화하는 작업부터 해야 교제가 쉬워진다.
+
+## 절차 
+1. 교체할 코드를 함수 하나에 모은다. 
+2. 이 함수만을 이용해 동작을 검증하는 테스트를 마련한다.
+3. 대체할 알고리즘을 준비한다. 
+4. 정적 검사를 수행한다.
+5. 기존 알고리즘과 새 알고리즘의 결과를 비교하는 테스트를 수행한다. 두 결과가 같다면 끝난다. 그렇지 않다면 기존 알고리즘을 참고해서 새 알고리즘을 테스트하고 디버깅한다.
+
+리팩터링이 지금까지는 프로그램 요소를 생성 혹은 제거하거나 이름을 변경하는 리팩터링을 다뤘다. 여기에 더해 요소를 다른 컨텍스트 (클래스나 모듈 등)로 옮기는 일 역시 리팩터링의 중요한 축이다. 다른 클래스나 모듈로 함수를 옮길 때는 함수 옮기기 를 사용한다. 필드 역시 필드 옮기기 8. 2 실로 옮길 수 있다.
+
+옮기기는 문장 단위에서도 이뤄진다. 문장 안이나 바깥으로 옮길 때는 문장을 함수로 옮기기 전나 문장을 호출한 곳으로 옮기기 · 상를 사용한다. 같은 함수 안에서 옮길 때는 문장 슬라이드하기 를 사용한다. 때로는 한 덩어리의 문장들이 기존 함수와 같은 일을 할 때가 있다. 이럴 때는 인라인 코드를 함수 호출로 바꾸기. 5개를 적용해 중복을 제거한다.
+
+반복문과 관련하여 자주 사용하는 리팩터링은 두 가지다. 첫 번째는 각각의 반복문이 단 하나의 일만 수행하도록 보장하는 반복문 쪼개기 : 원고, 두 번째는 반복문을 완전히 없애버리는 반복문을 파이프라인으로 바꾸기'다.
+
+마지막으로 많은 훌륭한 프로그래머가 즐겨 사용하는 리팩터링인 죽은 코드 제거하기 전가 있다. 필요 없는 문장들을 디지털 화염방사기로 태워버리는 것만큼 짜릿한 일도 없다.
+
+
