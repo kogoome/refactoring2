@@ -1,3 +1,33 @@
+{
+	class Customer {
+		constructor(name, discountRate) {
+			this._name = name
+			// ! discountRate 를 CustomerContract 클래스로 옮기려고 한다.
+			this._discountRate = discountRate
+			this._contract = new CustomerContract(this.dateToday())
+		}
+		get discountRate() {
+			return this._discountRate
+		}
+		becomePreferred() {
+			this._discountRate += 0.03
+			// other nice things
+		}
+		applyDiscount(amount) {
+			return amount.subtract(amount.multiply(this._discountRate))
+		}
+		dateToday() {
+			return new Date()
+		}
+	}
+
+	class CustomerContract {
+		constructor(startDate) {
+			this._startDate = startDate
+		}
+	}
+}
+
 // todo 1. 소스 필드가 캡슐화되어 있지 않다면 캡슐화
 // todo 2. 테스트
 // 3. 타깃 객체에 필드(와 접근자 메서드들)를 생성
@@ -8,12 +38,11 @@
 // 8. 테스트
 // 9. 소스 필드를 제거
 // 10. 테스트
-
 {
 	class Customer {
 		constructor(name, discountRate) {
 			this._name = name
-			// todo discountRate 를 CustomerContract 클래스로 옮기려고 한다.
+			// ! discountRate 를 CustomerContract 클래스로 옮기려고 한다.
 			// todo 1. 소스 필드가 캡슐화되어 있지 않다면 캡슐화
 			this._discountRate = discountRate
 			this._contract = new CustomerContract(this.dateToday())
@@ -43,8 +72,8 @@
 	class Customer {
 		#name
 		#contract
-		// todo discountRate 를 CustomerContract 클래스로 옮기기
-		// 1. 소스 필드가 캡슐화되어 있지 않다면 캡슐화-ok
+		// ! discountRate 를 CustomerContract 클래스로 옮기기
+		// 1. 소스 필드가 캡슐화되어 있지 않다면 캡슐화
 		#discountRate
 		constructor(name, discountRate) {
 			this.#name = name
@@ -56,7 +85,7 @@
 			return this.#discountRate
 		}
 		// todo 옮길 필드 접근메서드
-		// 캡슐화 후 프라이빗 세터 메서드 작성-ok
+		// 캡슐화 후 프라이빗 세터 메서드 작성
 		#setDiscountRate(aNumber) {
 			this.#discountRate = aNumber
 		}
@@ -92,7 +121,7 @@
 	class Customer {
 		#name
 		#contract
-		// todo discountRate 를 CustomerContract 클래스로 옮기기
+		// ! discountRate 를 CustomerContract 클래스로 옮기기
 		// 1. 소스 필드가 캡슐화되어 있지 않다면 캡슐화-ok
 		#discountRate
 		constructor(name, discountRate) {
@@ -153,7 +182,7 @@
 	class Customer {
 		#name
 		#contract
-		// todo discountRate 를 CustomerContract 클래스로 옮기기
+		// ! discountRate 를 CustomerContract 클래스로 옮기기
 		// todo 테스트 이상 없을 시 소스필드 제거
 		#discountRate
 		constructor(name, discountRate) {
@@ -211,7 +240,7 @@
 		constructor(name, discountRate) {
 			this.#name = name
 			this.#contract = new CustomerContract(this.dateToday(), discountRate)
-			this.#setDiscountRate(discountRate)
+			// this.#setDiscountRate(discountRate)
 		}
 		get discountRate() {
 			return this.#contract.discountRate

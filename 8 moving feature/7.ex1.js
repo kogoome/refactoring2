@@ -27,10 +27,13 @@ const people = [21, 22, 23, 24, 25, 26, 27, 28, 29].map((n) => createPerson(n))
 		let totalSalary = 0
 		for (const p of people) {
 			if (p.age < youngest) youngest = p.age
-		}
+			// totalSalary += p.salary
+		}		
 		for (const p of people) {
+			// if (p.age < youngest) youngest = p.age
 			totalSalary += p.salary
 		}
+
 		return `최연소 : ${youngest}, 총 급여: ${totalSalary}`
 	}
 	console.log(ex1(people)) // 최연소 : 21, 총 급여: 27000

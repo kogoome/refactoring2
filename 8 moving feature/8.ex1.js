@@ -83,7 +83,10 @@ console.log(acquireData(office))
 	function acquireData(input) {
 		const lines = input.split('\n')
 		const result = []
-		const loopItems = lines.slice(1).filter((line) => line.trim() !== '') // 반영
+		const loopItems = lines
+			.slice(1)
+			.filter((line) => line.trim() !== '')
+			; // 반영
 		for (const line of loopItems) {
 			// 빈줄지우기 => filter로 대체
 			// if (line.trim() === '') continue
@@ -105,7 +108,8 @@ console.log(acquireData(office))
 		const loopItems = lines
 			.slice(1)
 			.filter((line) => line.trim() !== '')
-			.map((line) => line.split(',')) // 파이프라인 종료는 세미콜론이 좋다
+			.map((line) => line.split(','))
+			; // 파이프라인 종료는 세미콜론이 좋다
 		for (const line of loopItems) {
 			// map으로 변환
 			// const record = line.split(',')
